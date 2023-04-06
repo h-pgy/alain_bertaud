@@ -1,0 +1,9 @@
+{
+    "distritos": "01_Limites%20Administrativos%5C%5CDistrito%5C%5CShapefile%5C%5CSIRGAS_SHP_distrito", 
+    "setores_censitarios": "02_Popula%E7%E3o%5C%5CSetor%20Censit%E1rio%5C%5CShapefile%5C%5CSIRGAS_SETOR_CENSITARIO_2010", 
+    "estacoes_metro": "04_Transporte%5C%5CMetr%F4%20Esta%E7%E3o%5C%5CShapefile%5C%5CSIRGAS_SHP_estacaometro", 
+    "zonas_OD_2017": "04_Transporte%5C%5CZona%20Origem%20Destino%5C%5CShapefile%5C%5CSIRGAS_SHP_origemdestino_2017", 
+    "quadras_fiscais": "12_Cadastro%5C%5CQuadra%5C%5CShapefile%5C%5CSIRGAS_SHP_quadraMDSF", 
+    "eixos_transformacao_urbana": "13_Legisla%E7%E3o%20Urbana%5C%5CPDE_03_Eixos%20de%20Estrutura%E7%E3o%20da%20Transforma%E7%E3o%20Urbana%5C%5CShapefile%5C%5CPDE_3-Eixos-EETU", 
+    "zoneamento": "13_Legisla%E7%E3o%20Urbana%5C%5CZoneamento_Lei16402-16_Mapa_01_Principal%5C%5CShapefile%5C%5CMapa-1-SHP"
+}
