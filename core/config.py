@@ -21,8 +21,10 @@ ZIP_FOLDER = solve_folder('zip_folder')
 IPTU_DATA_FOLDER = solve_folder('iptu_data_folder')
 OD_DATA_FOLDER = solve_folder('od_data_folder')
 CENSO_DATA_FOLDER = solve_folder('censo_data_folder')
+RAIS_FOLDER = solve_folder('rais_folder')
 
 IPTU_YEARS=[int(load_env_variable('iptu_ini')), int(load_env_variable('iptu_fim'))]
+RAIS_YEARS=list(range(int(load_env_variable('rais_ini')), int(load_env_variable('rais_fim'))+1))
 
 uris_camadas_json=solve_path(load_env_variable('uris_camadas_fname'))
 
