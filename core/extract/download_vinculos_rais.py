@@ -1,4 +1,5 @@
 from ftplib import FTP
+import os
 from core.config import RAIS_YEARS, RAIS_FOLDER
 from core.utils.file_path import solve_path
 
@@ -50,11 +51,20 @@ class RAISFTPDownloader:
         with open(new_fname, 'wb') as f:
             self.ftp.retrbinary(f'RETR {og_fname}', f.write)
         self.ftp.cwd('..')
+
+    def check_file_exists(self, year)->bool:
+
+        fname = self.new_fname(year)
+        return os.path.exists(fname)
+
             
     def __call__(self):
         
         self.chdir_microdados_rais()
         years = self.get_folder_years()
         for year in years:
+            if self.check_file_exists(year):
+                print(f'File for year {year} already saved.')
+                continue
             print(f'Downloading {year} microdata file')
             self.download_file(year)
