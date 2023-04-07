@@ -16,4 +16,5 @@ def download_all():
     od = OdDownload()
     od()
     rais = RAISFTPDownloader()
-    rais()
+    #muitos dados, to usando extraido do ObservaSampa diretamente
+    #rais()
