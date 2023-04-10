@@ -10,7 +10,11 @@ with st.sidebar:
     text = """
     ## Vertical Housing Development
     ### City of São Paulo - 2013 to 2023
-    This app    
+    This app aims to explore the causes of the vertical housing development ocurred in the city of São Paulo during the last decade (2013-2023).
+
+    Here, I analyse the relation between the ease of access to the job market in a given city district and the verticalization, measured in square-meters of vertical residential built area, ocurred on the district during the period.
+
+    The model proposed, an OLS based on Alain Bertaud's *Order Without Design* shows that the proportion of the city's job market that is accessible by a less than one hour commute explains a striking 29% of the variability of the vertical residential growth ocurred, with a highly statisticaly significant p-value (p<10^-7).
     """
     st.markdown(text)
 
@@ -148,18 +152,34 @@ def gerar_mapa2d_modelo(tipo:str):
 
 with tab1:
 
-    toggle1 = st.checkbox(label="Switch to 2D map", 
-                        key="2D_tab1", 
-                        value=False, 
-                        )
+    with st.expander('Details', expanded=True):
+        st.markdown("""
+        #### About the data
+        The data shown here is based on the Property Tax database made available by the city of São Paulo.
 
+        More then 6 million registers, representing each formal property on the city during the years of 2013 and 2023, where processed.
+        The total built area of vertical housing was obtained through the summation, for a given city district, of the areas of all the individual apartments built areas (here considered as floor space plus the unity's proportion to the commom areas and parking garage).
+        The gross vertical housing growth was calculated through the subtraction of the total vertical housing built area of a given city block in 2023 from it's original built area in 2013. Then each city block's growth were summed by city district.
+        """)
+
+    
+    
     def map_format_func(option)->str:
 
         if option == 'delta':
             return "Gross Vertical Residential Growth (sqms)"
         else:
-            return f'Vertical Housing Total Constructed Area for year {option}'
+            return f'Vertical Housing Total Built Area for year {option}'
     tipo = st.selectbox("Select the map type:", [2013, 2023, 'delta'], format_func=map_format_func)
+
+    *_, col4 = st.columns(4)
+
+    with col4:
+        toggle1 = st.checkbox(label="Switch to 2D map", 
+                        key="2D_tab1", 
+                        value=False, 
+                        )
+
 
     if not toggle1:
 
@@ -173,7 +193,23 @@ with tab1:
 
 with tab2:
 
-    toggle2 = st.checkbox(label="Switch to 2D map", 
+    with st.expander('Details', expanded=True):
+        st.markdown("""
+        #### About the data
+        The data shown here is based on the Origin and Destination survey conducted by the Sao Paulo Metropolitan Region's Subway Company on the year 2017.
+
+        The survey contains data related to travels made by people on São Paulo Metropolitan region, with their origins and destinations geolocated, along with information about the motives of the trips.
+        For this map, we've selected all the trips originated inside the city of São Paulo whose motive was related to work, that is:
+        * "Going to work" or
+        * "Looking for a job"
+
+        Then we aggregated the trip data by city district, obtaining the **mean commute time** for the commutes originated on the district.
+        """)
+
+    *_, col4 = st.columns(4)
+
+    with col4:
+        toggle2 = st.checkbox(label="Switch to 2D map", 
                         key="2D_tab2", 
                         value=False, 
                         )
@@ -181,7 +217,7 @@ with tab2:
     if not toggle2:
 
         data_url = 'https://raw.githubusercontent.com/h-pgy/alain_bertaud/streamlit_app/geojsons/commute_times.geojson'
-        multipli_altura=100
+        multipli_altura=80
         col_altura='DURACAO'
         r = gerar_pydcek(data_url, col_altura,
                      multipli_altura=multipli_altura)
@@ -197,7 +233,21 @@ with tab2:
 
 with tab3:
 
-    toggle3 = st.checkbox(label="Switch to 2D map", 
+    with st.expander('Details', expanded=True):
+        st.markdown("""
+        #### About the data
+        The data shown here is based on the RAIS database provided by the Ministry of Labour of the Federal Government of Brazil.
+
+        The data contains information about every formal job in Brazil. Companies are obliged by law to provide the data about their employees annually. 
+        Anonymized microdata about the job relations, containing information about the location of work is provided by the Government. Maria Gorete da Silva geolocalized the registers in the city of São Paulo, by city district.
+
+        The map bellow shows the, made by me, shows the percentage of the totality of jobs in the city that are located in a given city district.
+        """)
+
+    *_, col4 = st.columns(4)
+    
+    with col4:
+        toggle3 = st.checkbox(label="Switch to 2D map", 
                         key="2D_tab3", 
                         value=False, 
                         )
@@ -220,7 +270,22 @@ with tab3:
 
 with tab4:
 
-    toggle4 = st.checkbox(label="Switch to 2D map", 
+    with st.expander('Details', expanded=True):
+        st.markdown("""
+        #### About the data
+        The data shown here was generated throught the analyzis of the data contained on tabs "Commute Times" and "Distribution of Jobs".
+
+        For each city district, we calculated the mean travel time for work related trips originated on that district to every other city district (based on the Origin Destination Survey).
+
+        Then, we calculated the percentage of jobs in relation to the whole job market of the city that is accessible within an one hour trip from each district in the city.
+
+        The map above therefore shows the Job Market Accessibility for each district of the city.
+        """)
+
+    *_, col4 = st.columns(4)
+
+    with col4:
+        toggle4 = st.checkbox(label="Switch to 2D map", 
                         key="2D_tab4", 
                         value=False, 
                         )
@@ -246,7 +311,34 @@ with tab4:
 
 with tab5:
 
+    with st.expander('Details', expanded=True):
+        st.markdown("""
+        #### About the model
+        This tab shows the results of an Ordinary Least Squares Model (OLS) that predicts the gross vertical housing built area 
+        growth for a given city district in São Paulo in the last decade (2013-2023) in function of the district's access to the city's job market.
+        """)
+
+        st.latex("y_i = a + b*x_i")
+
+        st.markdown("""
+        **Where**:
+        * *i* = a given city district;
+        * *y* = vertical residential built area growth;
+        * *x* = percentage of the city's job market that is accessible by an one hour trip from that district
+        
+        As it can be seem bellow, the model, nevertheless it's simplicity, has an outstanding performance, with more than 29% of the variability explained by it.
+        """)
+
     dados_modelo = load_json('https://raw.githubusercontent.com/h-pgy/alain_bertaud/streamlit_app/generated_data/dados_modelo.json')
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric('R-squared', dados_modelo['rsquared'])
+    with col2:
+        st.metric('Beta p-value','%.2E' % dados_modelo['pvalue_beta'])
+    with col3:
+        st.metric('Beta coefficient (1000 sqm)', '{:.2f}'.format(dados_modelo['beta']/1000))
+
     df_final = load_df('https://raw.githubusercontent.com/h-pgy/alain_bertaud/streamlit_app/generated_data/df_final.csv')
 
     predict = lambda x: dados_modelo['alfa'] + dados_modelo['beta']*x
