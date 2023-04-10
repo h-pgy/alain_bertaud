@@ -148,13 +148,9 @@ def gerar_mapa2d_modelo(tipo:str):
 
 with tab1:
 
-    toggle1 = st_toggle.st_toggle_switch(label="Switch to 2D map", 
+    toggle1 = st.checkbox(label="Switch to 2D map", 
                         key="2D_tab1", 
-                        default_value=False, 
-                        label_after = False, 
-                        inactive_color = '#D3D3D3', 
-                        active_color="#11567f", 
-                        track_color="#29B5E8"
+                        value=False, 
                         )
 
     def map_format_func(option)->str:
@@ -177,13 +173,9 @@ with tab1:
 
 with tab2:
 
-    toggle2 = st_toggle.st_toggle_switch(label="Switch to 2D map", 
+    toggle2 = st.checkbox(label="Switch to 2D map", 
                         key="2D_tab2", 
-                        default_value=False, 
-                        label_after = False, 
-                        inactive_color = '#D3D3D3', 
-                        active_color="#11567f", 
-                        track_color="#29B5E8"
+                        value=False, 
                         )
 
     if not toggle2:
@@ -205,13 +197,9 @@ with tab2:
 
 with tab3:
 
-    toggle3 = st_toggle.st_toggle_switch(label="Switch to 2D map", 
+    toggle3 = st.checkbox(label="Switch to 2D map", 
                         key="2D_tab3", 
-                        default_value=False, 
-                        label_after = False, 
-                        inactive_color = '#D3D3D3', 
-                        active_color="#11567f", 
-                        track_color="#29B5E8"
+                        value=False, 
                         )
 
     if not toggle3:
@@ -232,13 +220,9 @@ with tab3:
 
 with tab4:
 
-    toggle4 = st_toggle.st_toggle_switch(label="Switch to 2D map", 
+    toggle4 = st.checkbox(label="Switch to 2D map", 
                         key="2D_tab4", 
-                        default_value=False, 
-                        label_after = False, 
-                        inactive_color = '#D3D3D3', 
-                        active_color="#11567f", 
-                        track_color="#29B5E8"
+                        value=False, 
                         )
 
     if not toggle4:
