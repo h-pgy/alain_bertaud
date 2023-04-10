@@ -6,15 +6,15 @@ import plotly.express as px
 import  streamlit_toggle as st_toggle
 
 with st.sidebar:
-    st.image('https://observasampa.prefeitura.sp.gov.br/assets/img/logo.png')
+    st.image('https://observasampa.prefeitura.sp.gov.br/assets/img/logo.webp', use_column_width=True)
     text = """
-    ## Dashboard Adensamento Construtivo
-    ### Cidade de São Paulo - 1995 a 2022
-    Este aplicativo, a partir da análise da base de dados do **IPTU** para os anos de 1995 a 2022, permite visualizar o adensamento construtivo da cidade de São Paulo neste período. O adensamento é calculado a partir da somatória da área construída por lote para cada setor da cidade, para cada ano.
+    ## Vertical Housing Development
+    ### City of São Paulo - 2013 to 2023
+    This app    
     """
     st.markdown(text)
 
-    st.markdown('#### **Desenvolvido por**: Henrique Pougy')
+    st.markdown('#### **Developed by**: Henrique Pougy')
     col1, col2 = st.columns([0.5, 3])
 
     with col1:
@@ -22,10 +22,14 @@ with st.sidebar:
     with col2:
         st.markdown('[linkedin](https://www.linkedin.com/in/henrique-pougy-8a008759?originalSubdomain=br)')
 
-st.title('Adensamento Construtivo na Cidade de São Paulo', anchor=None)
+st.title('Vertical Housing Development and Access to the Job Market', anchor=None)
 
 
-tab1, tab2, tab3, tab4 = st.tabs(["Delta", "Commutes", "Jobs", "Statistical Model"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Vertical Residential Growth", 
+                                        "Commute Times", 
+                                        "Distribution of Jobs", 
+                                        "Job Market Accessibility",
+                                        "Statistical Model"])
 
 @st.cache_data
 def load_dists_wgs84():
@@ -60,13 +64,10 @@ def gerar_pydcek(data_url:str, col_altura:str, multipli_altura:int=1):
         **{"latitude": -23.6, "longitude": -46.6, "zoom": 10, "maxZoom": 16, "pitch": 45, "bearing": 8}
     )
 
-    tooltip = {"html": "<b>Value per Square Meter:</b> {ds_nome} <br>"}
-
     r = pdk.Deck(
         layer,
         initial_view_state=view_state,
         map_style=pdk.map_styles.DARK,
-        tooltip=tooltip
     )
 
     return r
@@ -87,7 +88,6 @@ def gerar_pyplot(df, col_altura:str):
 @st.cache_resource
 def gerar_mapa_delta(tipo:str):
 
-    #tem que atualizar o link do ngrok
     data_url = 'https://raw.githubusercontent.com/h-pgy/alain_bertaud/streamlit_app/geojsons/delta_pde.geojson'
 
     if tipo == 'delta':
@@ -109,6 +109,12 @@ def load_df(url):
 
     return pd.read_csv(url, sep=';')
 
+@st.cache_data
+def load_json(url):
+
+    with requests.get(url) as r:
+        return r.json()
+
 
 @st.cache_resource
 def gerar_mapa2d_delta(tipo:str):
@@ -126,6 +132,20 @@ def gerar_mapa2d_delta(tipo:str):
     
     return fig
 
+@st.cache_resource
+def gerar_mapa2d_modelo(tipo:str):
+
+    if tipo == 'Absolute Error':
+        col_altura = 'abs_error'
+    elif tipo == 'Error Proportional to the True Value':
+        col_altura = 'proportion_error'
+    elif tipo == 'Predicted value':
+        col_altura = 'predicted'
+
+    fig = gerar_pyplot(df_final, col_altura)
+
+    return fig
+
 with tab1:
 
     toggle1 = st_toggle.st_toggle_switch(label="Switch to 2D map", 
@@ -137,7 +157,13 @@ with tab1:
                         track_color="#29B5E8"
                         )
 
-    tipo = st.radio("Selecione o ano:", [2013, 2023, 'delta'])
+    def map_format_func(option)->str:
+
+        if option == 'delta':
+            return "Gross Vertical Residential Growth (sqms)"
+        else:
+            return f'Vertical Housing Total Constructed Area for year {option}'
+    tipo = st.selectbox("Select the map type:", [2013, 2023, 'delta'], format_func=map_format_func)
 
     if not toggle1:
 
@@ -204,7 +230,56 @@ with tab3:
         fig = gerar_pyplot(df,'percent_empregos')
         st.plotly_chart(fig, use_container_width=True)
 
-
 with tab4:
 
-    pass
+    toggle4 = st_toggle.st_toggle_switch(label="Switch to 2D map", 
+                        key="2D_tab4", 
+                        default_value=False, 
+                        label_after = False, 
+                        inactive_color = '#D3D3D3', 
+                        active_color="#11567f", 
+                        track_color="#29B5E8"
+                        )
+
+    if not toggle4:
+
+        data_url = 'https://raw.githubusercontent.com/h-pgy/alain_bertaud/streamlit_app/geojsons/job_market_access.geojson'
+        multipli_altura=10000
+        col_altura='percent_empregos_destino'
+        r = gerar_pydcek(data_url, col_altura,
+                    multipli_altura=multipli_altura)
+
+        st.pydeck_chart(r)
+
+    else:
+        url = 'https://raw.githubusercontent.com/h-pgy/alain_bertaud/streamlit_app/generated_data/percent_jobs_acessible.csv'
+        df = load_df(url)
+        df.rename({'ds_origem_nome' : 'ds_nome'}, axis=1, inplace=True)
+        df['percent_empregos_destino']=df['percent_empregos_destino']*100
+        fig = gerar_pyplot(df,'percent_empregos_destino')
+        st.plotly_chart(fig, use_container_width=True)
+
+
+with tab5:
+
+    dados_modelo = load_json('https://raw.githubusercontent.com/h-pgy/alain_bertaud/streamlit_app/generated_data/dados_modelo.json')
+    df_final = load_df('https://raw.githubusercontent.com/h-pgy/alain_bertaud/streamlit_app/generated_data/df_final.csv')
+
+    predict = lambda x: dados_modelo['alfa'] + dados_modelo['beta']*x
+    df_final['predicted'] = df_final['percent_empregos_destino'].apply(predict)
+    df_final['abs_error'] = df_final['delta_pde'] - df_final['predicted']
+    df_final['abs_error']  = df_final['abs_error'].abs()
+    df_final['proportion_error'] = df_final['abs_error']/df_final['delta_pde']
+    
+    
+    fig_modelo = px.scatter(df_final, x="percent_empregos_destino", y="delta_pde", 
+                            hover_data=['ds_nome', 'predicted', 'abs_error'], 
+                            title='Vertical Housing Growth vs. Access to Job Market',
+                            trendline="ols", trendline_color_override='red')
+    st.plotly_chart(fig_modelo, use_container_width=True)
+
+    tipo = st.selectbox("Select the map data", options=['Absolute Error', 'Error Proportional to the True Value', 'Predicted value'],
+                        index=2)
+    fig = gerar_mapa2d_modelo(tipo)
+    st.plotly_chart(fig, use_container_width=True)
+    st.write(df_final)
