@@ -6,7 +6,7 @@ import plotly.express as px
 import  streamlit_toggle as st_toggle
 
 with st.sidebar:
-    st.image('https://observasampa.prefeitura.sp.gov.br/assets/img/logo.webp', use_column_width=True)
+    st.image('https://observasampa.prefeitura.sp.gov.br/assets/img/logo.webp', width='stretch')
     text = """
     ## Vertical Housing Development
     ### City of São Paulo - 2013 to 2023
@@ -22,7 +22,7 @@ with st.sidebar:
     col1, col2 = st.columns([0.5, 3])
 
     with col1:
-        st.image('https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg', use_column_width=True)
+        st.image('https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg', width='stretch')
     with col2:
         st.markdown('[linkedin](https://www.linkedin.com/in/henrique-pougy-8a008759?originalSubdomain=br)')
 
